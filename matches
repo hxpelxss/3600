@@ -1,3 +1,4 @@
+‎
 ‎repeat
 ‎    task.wait()
 ‎until game:IsLoaded() and game:GetService("Players").LocalPlayer
@@ -13,7 +14,6 @@
 ‎local matchEnded = false
 ‎local player = game.Players.LocalPlayer
 ‎local finishPart = workspace:WaitForChild("Map"):WaitForChild("Finish")
-‎
 ‎
 ‎repeat task.wait() until finishPart and finishPart:FindFirstChild("Humanoid")
 ‎
@@ -74,7 +74,7 @@
 ‎        matchCounter = matchCounter + 1
 ‎        print("Match ended! Matches completed:", matchCounter)
 ‎
-‎        updateCounter() 
+‎        updateCounter()
 ‎
 ‎        if matchCounter == MATCH_LIMIT then
 ‎            print("Reached final match, waiting before firing RestartMatch...")
