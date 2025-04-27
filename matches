@@ -1,0 +1,108 @@
+‎repeat
+‎    task.wait()
+‎until game:IsLoaded() and game:GetService("Players").LocalPlayer
+‎
+‎local SCRIPT_ENABLED = true
+‎local MATCH_LIMIT = 4 -- edit if need
+‎local MATCH_DELAY = 10 -- seconds delay after match ends before restart
+‎
+‎local ReplicatedStorage = game:GetService("ReplicatedStorage")
+‎local RestartMatch = ReplicatedStorage:WaitForChild("Remotes"):FindFirstChild("RestartMatch")
+‎
+‎local matchCounter = 0
+‎local matchEnded = false
+‎local player = game.Players.LocalPlayer
+‎local finishPart = workspace:WaitForChild("Map"):WaitForChild("Finish")
+‎
+‎
+‎repeat task.wait() until finishPart and finishPart:FindFirstChild("Humanoid")
+‎
+‎local BaseHumanoid = finishPart.Humanoid
+‎
+‎
+‎local screenGui = Instance.new("ScreenGui")
+‎screenGui.Name = "MatchCounterUI"
+‎screenGui.ResetOnSpawn = false
+‎screenGui.DisplayOrder = 10
+‎screenGui.Parent = player:WaitForChild("PlayerGui")
+‎
+‎local mainFrame = Instance.new("Frame")
+‎mainFrame.Name = "MainFrame"
+‎mainFrame.Size = UDim2.new(0, 180, 0, 70)
+‎mainFrame.Position = UDim2.new(0.85, -90, 0.1, 0)
+‎mainFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+‎mainFrame.BorderSizePixel = 0
+‎mainFrame.BackgroundTransparency = 0.3
+‎mainFrame.Parent = screenGui
+‎
+‎local roundCorner = Instance.new("UICorner")
+‎roundCorner.CornerRadius = UDim.new(0, 8)
+‎roundCorner.Parent = mainFrame
+‎
+‎local titleLabel = Instance.new("TextLabel")
+‎titleLabel.Name = "Title"
+‎titleLabel.Size = UDim2.new(1, 0, 0, 30)
+‎titleLabel.BackgroundTransparency = 1
+‎titleLabel.Text = "Match Counter"
+‎titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+‎titleLabel.TextSize = 18
+‎titleLabel.Font = Enum.Font.SourceSansBold
+‎titleLabel.Parent = mainFrame
+‎
+‎local counterLabel = Instance.new("TextLabel")
+‎counterLabel.Name = "Counter"
+‎counterLabel.Size = UDim2.new(1, 0, 0, 30)
+‎counterLabel.Position = UDim2.new(0, 0, 0.5, 0)
+‎counterLabel.BackgroundTransparency = 1
+‎counterLabel.Text = "Matches: 0 / " .. MATCH_LIMIT
+‎counterLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+‎counterLabel.TextSize = 16
+‎counterLabel.Font = Enum.Font.SourceSans
+‎counterLabel.Parent = mainFrame
+‎
+‎
+‎local function updateCounter()
+‎    counterLabel.Text = "Matches: " .. matchCounter .. " / " .. MATCH_LIMIT
+‎    if matchCounter == MATCH_LIMIT then
+‎        counterLabel.TextColor3 = Color3.fromRGB(0, 255, 0)  -- green on complete
+‎    end
+‎end
+‎
+‎local function onHealthChanged()
+‎    if BaseHumanoid.Health <= 0 and not matchEnded then
+‎        matchEnded = true  
+‎        matchCounter = matchCounter + 1
+‎        print("Match ended! Matches completed:", matchCounter)
+‎
+‎        updateCounter() 
+‎
+‎        if matchCounter == MATCH_LIMIT then
+‎            print("Reached final match, waiting before firing RestartMatch...")
+‎
+‎            task.wait(MATCH_DELAY)
+‎
+‎            if workspace:FindFirstChild("Map") and workspace.Map:FindFirstChild("Finish") then
+‎                RestartMatch:FireServer()
+‎                print("RestartMatch remote fired for final match.")
+‎            else
+‎                print("Map or Finish part no longer exists, skipping RestartMatch.")
+‎            end
+‎
+‎            SCRIPT_ENABLED = false  
+‎        else
+‎            print("Match", matchCounter, "completed. The server will auto-restart this round.")
+‎        end
+‎    elseif BaseHumanoid.Health > 0 then
+‎        matchEnded = false  
+‎    end
+‎end
+‎
+‎BaseHumanoid.HealthChanged:Connect(onHealthChanged)
+‎
+‎onHealthChanged()
+‎updateCounter()
+‎
+‎-- Keep the script alive
+‎while SCRIPT_ENABLED do
+‎    task.wait(1)
+‎end
